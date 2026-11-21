@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "components.html" import badges, media_image, dated %}
+{% set meta_title = article.title ~ ' | ' ~ profile.name %}
+{% set meta_description = (article.body|markdown|striptags|wordwrap(158)).splitlines()|first|default(article.title, true) %}
+{% set page_path = '/writing/' ~ (article.slug|urlencode) ~ '/' %}
+{% set meta_image = article.get('cover')|image %}
+{% set meta_image_alt = article.get('cover_alt') or ('Cover image for ' ~ article.title) if meta_image else '' %}
+{% set is_article = true %}
+{% block body %}
+<nav class="back" aria-label="Portfolio navigation"><a href="/#writing">← Back to writing</a></nav>
+<article class="article">
+  <header>
+    <h1>{{ article.title }}</h1>
+    <p class="metadata">{{ dated(article.publication_date) }}</p>
+    {{ badges(article.get('tags'), 'Tags') }}
+  </header>
+  {{ media_image(meta_image, meta_image_alt, 'article-cover') }}
+  <div class="prose article-prose">{{ article.body|markdown }}</div>
+</article>
+{% endblock %}

@@ -1,43 +1,46 @@
-# Mani Teja — Personal Portfolio
+# Mani Teja portfolio
 
-A static, GitHub Pages-ready personal portfolio closely following the typography, dimensions, timeline, and sections of https://uhvardhan.github.io/.
+[maniteja.me](https://maniteja.me) · [Pages CMS](https://app.pagescms.org/) · [Deployment runs](https://github.com/manitejakun/manitejakun.github.io/actions)
 
-## Files
+## Edit your portfolio
 
-- `index.html` — all visible text, social links, sections, and timeline items
-- `style.css` — exact-style layout measurements and mobile adjustments
-- `script.js` — automatic copyright year
-- `images/profile.svg` — **placeholder** profile image; replace it with your own
-- `images/experience.svg`, `project.svg`, `education.svg` — **placeholder** timeline logos; replace with real institution/company logos if appropriate
-- `images/favicon.svg` — small browser-tab icon
-- `CNAME` — the custom domain `maniteja.me`
-- `.nojekyll` — tells GitHub Pages to serve these files directly
+After the first deployment, sign in to Pages CMS with GitHub, open `manitejakun/manitejakun.github.io`, and select **main**. Choose an item in the sidebar, make your changes, then select **Save**. The save creates a GitHub commit and starts the site deployment. Open Deployment runs above and look for a green **Build and deploy portfolio** run, then refresh your site.
 
-## Customize before publishing
+| To update | In Pages CMS |
+| --- | --- |
+| Bio, photo, email or resume | Open **Profile**. Use the photo and PDF pickers to select or upload a file. Add photo alternative text. A selected resume PDF takes priority over the optional external resume link. |
+| Social accounts | Open **Social links**. Enter each full URL. For another platform, add a label and URL under **Other social links**. Clear a field to remove its link. |
+| College or job | Use **Education** or **Experience → New**. Choose a logo and add dates and a description. An empty end date displays as Present. Both collections use a shared display order. |
+| Project | Use **Projects → New**, then add details, a screenshot, and links. Edit an existing entry to update it or use its Delete action to remove it. Featured projects get a discreet label. |
+| Award or hackathon | Use **Achievements and hackathons → New**. Add the event, award, date, and a certificate or award image. A visitor can open the image at full size. |
+| Publication | Use **Publications → New**. Add the title, authors, venue, year, and available paper links or PDF. |
+| Article | Use **Writing → New**. Compose in the rich-text editor and add tags, a date, and an optional cover. Leave it on **Draft** while you work. Change to **Published** and save when it is ready. An existing article keeps the address set by its original filename when you edit its title. |
 
-1. Open `index.html` and replace the tagline, bio, timeline placeholders, project/publication entries, and email/social links with your actual details. **Nothing marked as a placeholder is a claim about your biography.**
-2. Replace `images/profile.svg` with an actual portrait file and change the image `src` in `index.html` to match (e.g. `images/me.jpg`).
-3. Replace example timeline logos with your college/company logos and update their `src` paths.
-4. The demo email `hello@maniteja.me` will work **only if you have configured an actual email mailbox** for it. Change or remove it if not.
-5. Optionally add `docs/resume.pdf` and a link for your CV in the social links header.
+Give earlier timeline entries and projects lower display-order values. For example, assign 10, 20, and 30 so another item can slot in between later. Entries with the same value use their filename as the tie-breaker. Achievements, publications, and articles show the newest first.
 
-## Deploy through GitHub Pages
+For a photo replacement, upload or select the new image in **Profile** and save the form. Use JPG or WebP for photos, PNG for transparent logos, and PDF for your resume. A square photo around 600 pixels and screenshots around 1,200 pixels wide are usually enough. Give screenshots and certificates concise alternative text. Review a PDF or certificate for personal information before uploading it.
 
-1. Create a new **public** GitHub repository named exactly `<YOUR-GITHUB-USERNAME>.github.io` (using your *actual* GitHub username). If you already have that repository, use it.
-2. Upload the **contents** of this folder to the repository root, including `index.html`, `style.css`, `images/`, `CNAME`, and `.nojekyll`. Do not upload only the ZIP or put everything inside an extra enclosing folder.
-3. In the repo, open **Settings → Pages → Build and deployment**, choose **Deploy from a branch**, then **main** and **/(root)**. Save.
-4. Verify the site works at `https://<YOUR-GITHUB-USERNAME>.github.io/`.
-5. In **Settings → Pages**, enter `maniteja.me` as the custom domain if GitHub hasn't already picked it up from `CNAME`.
-6. At Namecheap DNS management, configure the apex domain `@` with these four **A** records (replace conflicting A records):
-   - `185.199.108.153`
-   - `185.199.109.153`
-   - `185.199.110.153`
-   - `185.199.111.153`
-   Optionally set `www` CNAME pointing to `<YOUR-GITHUB-USERNAME>.github.io` (without `https://`). Avoid conflicting www records.
-7. Once DNS/HTTPS are ready, enable **Enforce HTTPS** in GitHub Pages. Propagation can take time.
+This repository is public. Draft articles and uploaded files are visible in GitHub source history even though drafts and unused uploads are omitted from the generated website. Keep private material outside the repository.
 
-Official docs: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
+## One-time publishing setup
 
-## Attribution
+1. Preserve the pre-migration commit on a backup branch before merging the migration. Verify it still matches the previous `main`.
+2. In **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. Check the Custom domain field still contains `maniteja.me`. The repository also retains its `CNAME`.
+3. Merge the approved migration to `main`. In **Actions**, confirm that **Build and deploy portfolio** succeeds. If the Pages source was switched after merging, run the workflow manually on `main`.
+4. Sign in to Pages CMS and install or authorize its GitHub App for **only** this repository. Open `main` and confirm the eight content groups appear.
+5. To test the complete workflow, change and save one genuine profile value in Pages CMS. Verify that Pages CMS created the commit, the Pages deployment succeeded, and the new value appears on `maniteja.me`. Check an uploaded image or PDF the same way. Check the domain over HTTPS and enable **Enforce HTTPS** when GitHub makes it available.
 
-The layout was closely modeled after https://uhvardhan.github.io/ and its public MIT-licensed repository https://github.com/uhvardhan/uhvardhan.github.io, based on the upstream template https://github.com/leonidk/leonidk.github.io. This is a new implementation with original placeholders, not a copy of the owner's biography or profile images. Review the upstream license and retain any attribution needed if you reuse upstream source verbatim.
+[GitHub Pages publishing documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) · [Pages CMS setup documentation](https://pagescms.org/docs/quick-start/)
+
+## Source structure
+
+- `.pages.yml` defines the CMS forms and upload folders.
+- `content/` holds editable profile, social links, and individual entries.
+- `media/images/` and `media/documents/` hold uploads.
+- `templates/`, `style.css`, and `images/` hold the design.
+- `build.py` renders the site and copies media referenced by published content.
+- `.github/workflows/pages.yml` builds pull requests and deploys pushes to `main`.
+
+The static build replaces branch-based publishing. The migration removes the old `.nojekyll` marker because GitHub Actions publishes the generated HTML directly. To preview locally as a maintainer, install `requirements.txt`, run `python build.py`, and serve `_site` with `python -m http.server 8000 --directory _site`. Routine CMS updates require no local build.
+
+The layout preserves the original portfolio’s academic conventions. The original repository README credits [Harshvardhan Uppaluru’s portfolio](https://uhvardhan.github.io/) and [the academic template](https://github.com/leonidk/leonidk.github.io).

@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280" viewBox="0 0 280 280" role="img" aria-label="Profile photo placeholder"><rect width="280" height="280" fill="#ececec"/><circle cx="140" cy="104" r="47" fill="#b6b6b6"/><path d="M47 256c7-62 39-97 93-97s86 35 93 97" fill="#b6b6b6"/><text x="140" y="265" text-anchor="middle" fill="#777" font-family="Arial,sans-serif" font-size="12">REPLACE WITH YOUR PHOTO</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280" viewBox="0 0 280 280">
+  <rect width="280" height="280" fill="#eef3f8"/>
+  <circle cx="140" cy="140" r="87" fill="none" stroke="#d0dce8" stroke-width="2"/>
+  <text x="140" y="161" text-anchor="middle" font-family="system-ui, sans-serif" font-size="61" font-weight="600" letter-spacing="-5" fill="#426281">MT</text>
+</svg>

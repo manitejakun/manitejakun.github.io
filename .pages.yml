@@ -1,0 +1,541 @@
+media:
+- name: images
+  label: Images
+  input: media/images
+  output: /media/images
+  extensions:
+  - jpg
+  - jpeg
+  - png
+  - webp
+  - avif
+  rename: random
+- name: documents
+  label: PDFs
+  input: media/documents
+  output: /media/documents
+  extensions:
+  - pdf
+  rename: random
+content:
+- name: profile
+  label: Profile
+  type: file
+  path: content/profile.json
+  format: json
+  fields:
+  - name: name
+    label: Full name
+    type: string
+    required: true
+  - name: headline
+    label: Professional headline
+    type: string
+  - name: tagline
+    label: Short tagline
+    type: string
+  - name: photo
+    label: Profile photo
+    type: image
+    options:
+      media: images
+  - name: photo_alt
+    label: Photo alternative text
+    type: string
+    description: Describe the portrait for screen-reader users.
+  - name: bio
+    label: About me
+    type: rich-text
+    required: false
+    options:
+      format: markdown
+      switcher: false
+      media: false
+  - name: location
+    label: Location
+    type: string
+  - name: email
+    label: Public email address
+    type: string
+    pattern:
+      regex: ^[^\s@]+@[^\s@]+\.[^\s@]+$
+      message: Enter a valid email address.
+  - name: resume
+    label: Resume PDF
+    type: file
+    options:
+      media: documents
+      extensions:
+      - pdf
+  - name: resume_url
+    label: External resume download link
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+    description: Used when a resume PDF has not been selected.
+- name: social
+  label: Social links
+  type: file
+  path: content/social.json
+  format: json
+  fields:
+  - name: github
+    label: GitHub
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+  - name: linkedin
+    label: LinkedIn
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+  - name: twitter
+    label: X / Twitter
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+  - name: blog
+    label: Personal blog
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+  - name: other
+    label: Other social links
+    type: object
+    list: true
+    fields:
+    - name: label
+      label: Link label
+      type: string
+      required: true
+    - name: url
+      label: Link address
+      type: string
+      pattern:
+        regex: ^https?://[^\s]+$
+        message: Enter a full web address starting with https:// or http://.
+      required: true
+- name: education
+  label: Education
+  type: collection
+  path: content/education
+  format: json
+  filename:
+    template: '{degree}-{institution}-{start_year}.json'
+    field: create
+  subfolders: false
+  exclude:
+  - .gitkeep
+  view:
+    primary: institution
+    fields:
+    - institution
+    - order
+    sort: [order]
+    default:
+      sort: order
+      order: asc
+  fields:
+  - name: institution
+    label: Institution name
+    type: string
+    required: true
+  - name: degree
+    label: Degree
+    type: string
+    required: true
+  - name: department
+    label: Department
+    type: string
+  - name: start_year
+    label: Start year
+    type: number
+    required: true
+    options:
+      min: 1900
+      max: 2200
+  - name: end_year
+    label: End year
+    type: number
+    required: false
+    options:
+      min: 1900
+      max: 2200
+  - name: logo
+    label: Institution logo
+    type: image
+    options:
+      media: images
+  - name: description
+    label: Description
+    type: rich-text
+    required: false
+    options:
+      format: markdown
+      switcher: false
+      media: false
+  - name: order
+    label: Display order
+    type: number
+    default: 100
+    description: Smaller numbers appear first. Leave gaps such as 10, 20, 30.
+    options:
+      min: 0
+- name: experience
+  label: Experience
+  type: collection
+  path: content/experience
+  format: json
+  filename:
+    template: '{position}-{organization}-{start_date}.json'
+    field: create
+  subfolders: false
+  exclude:
+  - .gitkeep
+  view:
+    primary: organization
+    fields:
+    - organization
+    - order
+    sort: [order]
+    default:
+      sort: order
+      order: asc
+  fields:
+  - name: organization
+    label: Company or organization
+    type: string
+    required: true
+  - name: position
+    label: Position
+    type: string
+    required: true
+  - name: employment_type
+    label: Employment type
+    type: string
+  - name: start_date
+    label: Start date
+    type: date
+    required: true
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: end_date
+    label: End date
+    type: date
+    required: false
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: logo
+    label: Company logo
+    type: image
+    options:
+      media: images
+  - name: description
+    label: Description
+    type: rich-text
+    required: false
+    options:
+      format: markdown
+      switcher: false
+      media: false
+  - name: technologies
+    label: Technologies
+    type: string
+    list: true
+  - name: links
+    label: Relevant links
+    type: object
+    list: true
+    fields:
+    - name: label
+      label: Link label
+      type: string
+      required: true
+    - name: url
+      label: Link address
+      type: string
+      pattern:
+        regex: ^https?://[^\s]+$
+        message: Enter a full web address starting with https:// or http://.
+      required: true
+  - name: order
+    label: Display order
+    type: number
+    default: 100
+    description: Smaller numbers appear first. Leave gaps such as 10, 20, 30.
+    options:
+      min: 0
+- name: projects
+  label: Projects
+  type: collection
+  path: content/projects
+  format: json
+  filename:
+    template: '{primary}.json'
+    field: create
+  subfolders: false
+  exclude:
+  - .gitkeep
+  view:
+    primary: title
+    fields:
+    - title
+    - order
+    sort: [order]
+    default:
+      sort: order
+      order: asc
+  fields:
+  - name: title
+    label: Project title
+    type: string
+    required: true
+  - name: description
+    label: Description
+    type: rich-text
+    required: true
+    options:
+      format: markdown
+      switcher: false
+      media: false
+  - name: cover
+    label: Cover image
+    type: image
+    options:
+      media: images
+  - name: cover_alt
+    label: Cover alternative text
+    type: string
+  - name: technologies
+    label: Technologies
+    type: string
+    list: true
+  - name: github_url
+    label: GitHub repository URL
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+  - name: demo_url
+    label: Live demo URL
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+  - name: project_date
+    label: Project date
+    type: date
+    required: false
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: featured
+    label: Featured project
+    type: boolean
+    default: false
+  - name: order
+    label: Display order
+    type: number
+    default: 100
+    description: Smaller numbers appear first. Leave gaps such as 10, 20, 30.
+    options:
+      min: 0
+- name: achievements
+  label: Achievements and hackathons
+  type: collection
+  path: content/achievements
+  format: json
+  filename:
+    template: '{primary}.json'
+    field: create
+  subfolders: false
+  exclude:
+  - .gitkeep
+  view:
+    primary: title
+    fields:
+    - title
+    - event_date
+    sort: [event_date]
+    default:
+      sort: event_date
+      order: desc
+  fields:
+  - name: title
+    label: Achievement title
+    type: string
+    required: true
+  - name: event
+    label: Event name
+    type: string
+    required: true
+  - name: event_date
+    label: Date
+    type: date
+    required: true
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: description
+    label: Description
+    type: rich-text
+    required: false
+    options:
+      format: markdown
+      switcher: false
+      media: false
+  - name: organization
+    label: Organization
+    type: string
+  - name: image
+    label: Award or certificate image
+    type: image
+    options:
+      media: images
+  - name: image_alt
+    label: Certificate alternative text
+    type: string
+  - name: external_url
+    label: External link
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+- name: publications
+  label: Publications
+  type: collection
+  path: content/publications
+  format: json
+  filename:
+    template: '{primary}.json'
+    field: create
+  subfolders: false
+  exclude:
+  - .gitkeep
+  view:
+    primary: title
+    fields:
+    - title
+    - year
+    sort: [year]
+    default:
+      sort: year
+      order: desc
+  fields:
+  - name: title
+    label: Title
+    type: string
+    required: true
+  - name: authors
+    label: Authors
+    type: string
+    list: true
+  - name: venue
+    label: Venue or conference
+    type: string
+  - name: year
+    label: Publication year
+    type: number
+    required: true
+    options:
+      min: 1900
+      max: 2200
+  - name: description
+    label: Abstract or description
+    type: rich-text
+    required: false
+    options:
+      format: markdown
+      switcher: false
+      media: false
+  - name: publication_url
+    label: Publication URL
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+  - name: pdf
+    label: Publication PDF
+    type: file
+    options:
+      media: documents
+      extensions:
+      - pdf
+  - name: pdf_url
+    label: External PDF link
+    type: string
+    pattern:
+      regex: ^https?://[^\s]+$
+      message: Enter a full web address starting with https:// or http://.
+- name: writing
+  label: Writing
+  type: collection
+  path: content/writing
+  format: json
+  filename:
+    template: '{primary}.json'
+    field: create
+  subfolders: false
+  operations:
+    rename: false
+  exclude:
+  - .gitkeep
+  view:
+    primary: title
+    fields:
+    - title
+    - publication_date
+    sort: [publication_date]
+    default:
+      sort: publication_date
+      order: desc
+  fields:
+  - name: title
+    label: Article title
+    type: string
+    required: true
+  - name: publication_date
+    label: Publication date
+    type: date
+    required: true
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: cover
+    label: Cover image
+    type: image
+    options:
+      media: images
+  - name: cover_alt
+    label: Cover alternative text
+    type: string
+  - name: body
+    label: Article content
+    type: rich-text
+    required: true
+    options:
+      format: markdown
+      switcher: false
+      media: images
+  - name: status
+    label: Publication status
+    type: select
+    default: draft
+    required: true
+    options:
+      values:
+      - name: draft
+        label: Draft
+      - name: published
+        label: Published
+  - name: tags
+    label: Tags
+    type: string
+    list: true
