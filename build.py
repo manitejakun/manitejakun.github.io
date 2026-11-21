@@ -176,11 +176,27 @@ def build():
     socials = read(CONTENT / "social.json")
     writing = journal_entries()
     projects = sorted(records("projects"), key=order_key)
+    for project in projects:
+        project["url"] = "/projects/" + project["slug"] + "/"
     photos = []
     for item in sorted(records("photos"), key=order_key):
         source = image(item.get("image"))
         if source:
             photos.append({**item, "image": source})
+    from PIL import Image, ImageOps
+    for item in photos:
+        source = ROOT / item["image"].lstrip("/")
+        with Image.open(source) as original:
+            photo = ImageOps.exif_transpose(original).convert("RGB")
+        item["dimensions"] = photo.size
+        variants = []
+        for width in sorted({min(photo.width, limit) for limit in (480, 960)}):
+            filename = f"prints/{source.name}-{width}.webp"
+            target = OUTPUT / filename
+            target.parent.mkdir(exist_ok=True, parents=True)
+            photo.resize((width, max(1, round(width * photo.height / photo.width))), Image.Resampling.LANCZOS).save(target, quality=83)
+            variants.append(f"/{filename} {width}w")
+        item["srcset"] = ", ".join(variants)
     env.globals.update(
         site_url=SITE_URL, profile=profile, portrait=image(profile.get("photo")) or PORTRAIT_FALLBACK,
         year=date.today().year, socials=socials, projects=projects, photos=photos,
@@ -193,6 +209,13 @@ def build():
         writing=writing,
     ))
     output_file("journal/index.html", text=env.get_template("journal.html").render(entries=writing))
+    for project in projects:
+        output_file(project["url"].strip("/") + "/index.html", text=env.get_template("project.html").render(project=project))
+    output_file("studio/index.html", text=env.get_template("redirect.html").render(target="/journal/"))
+    urls = ["/", "/journal/"] + [entry["url"] for entry in writing + projects]
+    output_file("sitemap.xml", text='<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + "".join(f"<url><loc>{SITE_URL}{url}</loc></url>" for url in urls) + "</urlset>")
+    output_file("robots.txt", text=f"User-agent: *\nDisallow: /studio/\nSitemap: {SITE_URL}/sitemap.xml\n")
+    output_file("404.html", text=env.get_template("404.html").render())
     article = env.get_template("article.html")
     redirect = env.get_template("redirect.html")
     for item in writing:
@@ -205,7 +228,6 @@ def build():
     output_file("writing/index.html", text=redirect.render(target="/journal/"))
 
     for relative in (
-        "studio/index.html", "studio/studio.js", "studio/studio.css",
         "CNAME", "style.css", "interactions.js", "images/favicon.svg", "images/profile.svg",
         "images/social.svg", "images/sculpture.webp", "fonts/inter-latin.woff2",
         "fonts/caveat-latin.woff2", "fonts/OFL-Inter.txt", "fonts/OFL-Caveat.txt",

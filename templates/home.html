@@ -3,37 +3,17 @@
 {% block body %}
 <header class="profile">
   <div class="intro">
-    {% set names = profile.name.split(' ', 1) %}
-    <h1>
-      <span>{{ names[0] }}</span>
-      {% if names|length > 1 %}<span>{{ names[1] }}<span class="hero-period" aria-hidden="true">.</span></span>
-      {% else %}<span class="hero-period" aria-hidden="true">.</span>{% endif %}
-    </h1>
+    <h1>{{ profile.name|replace(' ', '') }}<span class="hero-period">.</span></h1>
+    <div class="scene-links">{% if photos or projects or writing %}<a href="#work">Explore work ↓</a>{% endif %}<a href="/journal/">Journal ↗</a></div>
     {% if profile.get('tagline') %}<p class="tagline">{{ profile.tagline }}</p>{% endif %}
     {% if profile.get('location') %}<p class="location">{{ profile.location }}</p>{% endif %}
-    {% set resume = profile.get('resume')|pdf %}
-    {% set resume_url = profile.get('resume_url')|web_url %}
-    {% if profile.get('email') or resume or resume_url or socials.get('linkedin') or socials.get('twitter') or socials.get('blog') or socials.get('other') %}
-    <nav class="socials" aria-label="Contact and social links">
-      {{ social_link('Email', ('mailto:' ~ profile.email) if profile.get('email') else '', 'mail') }}
-      {{ social_link('LinkedIn', socials.get('linkedin')|web_url, 'linkedin') }}
-      {{ social_link('X', socials.get('twitter')|web_url, 'x') }}
-      {{ social_link('Blog', socials.get('blog')|web_url, 'blog') }}
-      {% for link in socials.get('other') or [] %}{{ social_link(link.label, link.url|web_url, 'link') }}{% endfor %}
-      {% if resume %}
-      <a class="social-link" href="{{ resume }}" download><svg width="18" height="18" aria-hidden="true" focusable="false"><use href="/images/social.svg#download"></use></svg><span>Resume (PDF)</span></a>
-      {% else %}
-      {{ social_link('Resume', resume_url, 'download') }}
-      {% endif %}
-    </nav>
-    {% endif %}
     {% if profile.get('headline') %}<p class="signature">{{ profile.headline }}</p>{% endif %}
   </div>
   <div class="hero-stage">
     <div class="hero-object" data-tilt>
-      <img class="hero-art" src="/images/sculpture.webp" width="830" height="900" fetchpriority="high" alt="">
-      <span class="glass-lens" aria-hidden="true"></span>
+      {% if photos %}<img class="hero-art" src="{{ photos[0].image }}" srcset="{{ photos[0].srcset }}" sizes="(max-width:700px) 89vw, 600px" width="{{ photos[0].dimensions[0] }}" height="{{ photos[0].dimensions[1] }}" alt="{{ photos[0].alt }}" fetchpriority="high">{% else %}<img class="hero-art" src="/images/sculpture.webp" width="830" height="900" alt="" fetchpriority="high">{% endif %}
     </div>
+    {% if photos %}<a class="scene-label" href="#photos">{{ photos[0].title }} ↗</a>{% endif %}
     {% if portrait != '/images/profile.svg' %}
     <figure class="portrait-print">
       <img class="portrait" src="{{ portrait }}" width="144" height="144" alt="{{ profile.get('photo_alt') or ('Portrait of ' ~ profile.name) }}">
@@ -41,6 +21,13 @@
     {% endif %}
   </div>
 </header>
+{% if writing or photos or projects %}
+<section class="selection" aria-labelledby="work"><h2 id="work">Selected work</h2><div class="mosaic">{% if projects %}{% set lead = projects|selectattr('featured','defined')|selectattr('featured')|first|default(projects[0]) %}<a class="work-project" href="{{ lead.url }}"><small>Project ↗</small>{% if lead.get('cover')|image %}<img src="{{ lead.cover }}" alt="" loading="lazy">{% endif %}<strong>{{ lead.title }}</strong></a>{% endif %}
+{% if photos %}<a class="work-print" href="#photos"><img src="{{ photos[0].image }}" srcset="{{ photos[0].srcset }}" sizes="(max-width:650px) 88vw, 520px" width="{{ photos[0].dimensions[0] }}" height="{{ photos[0].dimensions[1] }}" alt="{{ photos[0].alt }}" decoding="async"><strong>{{ photos[0].title }}</strong></a>{% endif %}
+{% if writing %}<a class="work-note" href="{{ writing[0].url }}"><small>Journal · {{ dated(writing[0].publication_date) }}</small><strong>{{ writing[0].title }}</strong><span aria-hidden="true">↗</span></a>{% endif %}
+
+</div></section>{% endif %}
+
 {% if timeline %}
 <section aria-labelledby="timeline">
   <h2 id="timeline">Education &amp; experience</h2>
@@ -65,20 +52,14 @@
   </ol>
 </section>
 {% endif %}
-{% if profile.get('bio') %}
-<section aria-labelledby="about">
-  <h2 id="about">About</h2>
-  <div class="prose">{{ profile.bio|markdown }}</div>
-</section>
-{% endif %}
 {% if photos %}
 <section class="photos" aria-labelledby="photos">
-  <h2 id="photos">Photos<span class="heading-point" aria-hidden="true">.</span></h2>
+  <h2 id="photos">Film wall<span class="heading-point" aria-hidden="true">.</span></h2>
   <ul class="film-grid">
     {% for photo in photos %}
     <li class="film-frame">
       <a class="film-photo" href="{{ photo.image }}" data-lightbox>
-        <img src="{{ photo.image }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
+        <img src="{{ photo.image }}" srcset="{{ photo.srcset }}" sizes="(max-width:650px) 88vw, 520px" width="{{ photo.dimensions[0] }}" height="{{ photo.dimensions[1] }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
         <span class="film-open glass" aria-hidden="true">↗&#xfe0e;</span>
       </a>
       {% if photo.get('caption') or photo.get('photo_date') %}
@@ -105,7 +86,7 @@
     <li class="entry{% if cover %} entry-with-image{% endif %}">
       {{ media_image(cover, item.get('cover_alt') or ('Screenshot of ' ~ item.title), 'entry-image') }}
       <div>
-        <h3>{{ item.title }}{% if item.get('featured') %} <span class="feature">Featured</span>{% endif %}</h3>
+        <h3><a href="{{ item.url }}">{{ item.title }}</a>{% if item.get('featured') %} <span class="feature">Featured</span>{% endif %}</h3>
         {% if item.get('project_date') %}<p class="metadata">{{ dated(item.project_date) }}</p>{% endif %}
         {% if item.get('description') %}<div class="prose">{{ item.description|markdown }}</div>{% endif %}
         {{ badges(item.get('technologies'), 'Technologies') }}
@@ -173,6 +154,27 @@
   </ul>
 </section>
 {% endif %}
+<section aria-labelledby="about">
+  <h2 id="about">About</h2>
+  <div class="prose">{{ profile.get("bio")|markdown }}</div>
+    {% set resume = profile.get('resume')|pdf %}
+    {% set resume_url = profile.get('resume_url')|web_url %}
+    {% if profile.get('email') or resume or resume_url or socials.get('linkedin') or socials.get('twitter') or socials.get('blog') or socials.get('other') %}
+    <nav class="socials" aria-label="Contact and social links">
+      {{ social_link('Email', ('mailto:' ~ profile.email) if profile.get('email') else '', 'mail') }}
+      {{ social_link('LinkedIn', socials.get('linkedin')|web_url, 'linkedin') }}
+      {{ social_link('X', socials.get('twitter')|web_url, 'x') }}
+      {{ social_link('Blog', socials.get('blog')|web_url, 'blog') }}
+      {% for link in socials.get('other') or [] %}{{ social_link(link.label, link.url|web_url, 'link') }}{% endfor %}
+      {% if resume %}
+      <a class="social-link" href="{{ resume }}" download><svg width="18" height="18" aria-hidden="true" focusable="false"><use href="/images/social.svg#download"></use></svg><span>Resume (PDF)</span></a>
+      {% else %}
+      {{ social_link('Resume', resume_url, 'download') }}
+      {% endif %}
+    </nav>
+    {% endif %}
+
+</section>
 {% endblock %}
 
 {% block scripts %}<script src="/interactions.js" defer></script>{% endblock %}
