@@ -127,7 +127,7 @@ content:
   format: json
   filename:
     template: '{degree}-{institution}-{start_year}.json'
-    field: create
+    field: false
   subfolders: false
   exclude:
   - .gitkeep
@@ -193,7 +193,7 @@ content:
   format: json
   filename:
     template: '{position}-{organization}-{start_date}.json'
-    field: create
+    field: false
   subfolders: false
   exclude:
   - .gitkeep
@@ -279,7 +279,7 @@ content:
   format: json
   filename:
     template: '{primary}.json'
-    field: create
+    field: false
   subfolders: false
   exclude:
   - .gitkeep
@@ -354,7 +354,7 @@ content:
   format: json
   filename:
     template: '{primary}.json'
-    field: create
+    field: false
   subfolders: false
   exclude:
   - .gitkeep
@@ -415,7 +415,7 @@ content:
   format: json
   filename:
     template: '{primary}.json'
-    field: create
+    field: false
   subfolders: false
   exclude:
   - .gitkeep
@@ -481,7 +481,7 @@ content:
   format: json
   filename:
     template: '{primary}.json'
-    field: create
+    field: false
   subfolders: false
   operations:
     rename: false
