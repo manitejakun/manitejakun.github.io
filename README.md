@@ -15,7 +15,7 @@ After the first deployment, sign in to Pages CMS with GitHub, open `manitejakun/
 | Award or hackathon | Use **Achievements and hackathons → New**. Add the event, award, date, and a certificate or award image. A visitor can open the image at full size. |
 | Publication | Use **Publications → New**. Add the title, authors, venue, year, and available paper links or PDF. |
 | Photos | Use **Photos → New** to select or upload an image. Add alternative text, a handwritten caption, and an optional date. Lower display-order values appear first. |
-| Article | Use **Writing → New**. Compose in the rich-text editor and add tags, a date, and an optional cover. Leave it on **Draft** while you work. Change to **Published** and save when it is ready. An existing article keeps the address set by its original filename when you edit its title. |
+| Journal entry | Use **Journal → New**. Compose in the rich-text editor and add tags, a date, and an optional cover. Leave it on **Draft** while you work. Change to **Published** and save when it is ready. A title edit preserves the article address as long as the slug stays the same. |
 
 Give earlier timeline entries and projects lower display-order values. For example, assign 10, 20, and 30 so another item can slot in between later. Entries with the same value use their filename as the tie-breaker. Achievements, publications, and articles show the newest first.
 
@@ -32,6 +32,24 @@ This repository is public. Draft articles and uploaded files are visible in GitH
 5. To test the complete workflow, change and save one genuine profile value in Pages CMS. Verify that Pages CMS created the commit, the Pages deployment succeeded, and the new value appears on `maniteja.me`. Check an uploaded image or PDF the same way. Check the domain over HTTPS and enable **Enforce HTTPS** when GitHub makes it available.
 
 [GitHub Pages publishing documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) · [Pages CMS setup documentation](https://pagescms.org/docs/quick-start/)
+
+## Publish a Journal entry
+
+In [Pages CMS](https://app.pagescms.org/manitejakun/manitejakun.github.io/main/collection/writing), open **Journal → New**. Enter the title, publication date, and a URL slug such as `notes-from-a-roll-of-film`. Add a short description for the index and link previews, and an optional subtitle for the article. Write in the visual editor or switch **Body (Markdown)** to **Source** to edit Markdown directly.
+
+- **With a photo:** Upload or choose one in **Cover image**, describe it in **Cover alternative text**, and add an optional **Cover caption**. You can insert additional photos in the body.
+- **Without a photo:** Leave the cover fields blank. The article starts with the title, date, and writing, and its index card uses a text layout.
+
+Set **Publication status** to **Published** and select **Save**. GitHub Actions rebuilds the index and publishes the article to `/journal/your-slug/`. Keep the slug the same after publishing so existing links keep working.
+
+### Publish through GitHub
+
+1. Copy [the Journal entry template](docs/journal-entry-template.json) to a new file under `content/writing/`, such as `content/writing/notes-from-a-roll-of-film.json`.
+2. Edit the title, slug, publication date (`YYYY-MM-DD`), and `body`. The body is a JSON string containing Markdown. Use `\n` for a line break or `\n\n` between paragraphs.
+3. For a photo, upload the file under `media/images/`, then set `cover` to its public path, such as `/media/images/roll-of-film.webp`. Add `cover_alt` and an optional `cover_caption`. For a text-only entry, leave those three values empty.
+4. Set `status` to `published` and commit to `main`. You can also open a pull request to run the build first, then merge it. The deployment updates both the index and your article automatically.
+
+In this public repository, **Draft** keeps an entry out of the generated website. A committed draft and its uploaded media are still visible in GitHub. Keep private drafts on your device or in a private notes app until you are ready to share them.
 
 ## Source structure
 

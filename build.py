@@ -5,6 +5,7 @@ import re
 from datetime import date
 from pathlib import Path
 from shutil import copyfile
+from unicodedata import normalize
 from urllib.parse import unquote, urlsplit
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
@@ -126,6 +127,35 @@ def output_file(relative, *, text=None):
         target.write_text(text, encoding="utf-8")
 
 
+def journal_entries():
+    entries = []
+    used_slugs = set()
+    for path in sorted((CONTENT / "writing").glob("*.json")):
+        entry = read(path)
+        if entry.get("status") != "published":
+            continue
+        filename_slug = normalize("NFKD", path.stem).encode("ascii", "ignore").decode()
+        slug = entry.get("slug") or re.sub(r"[^a-z0-9]+", "-", filename_slug.lower()).strip("-")
+        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
+            raise ValueError(f"{path.name}: use lowercase letters, numbers and single hyphens for the Journal slug")
+        if slug in used_slugs:
+            raise ValueError(f"{path.name}: the Journal slug '{slug}' is already in use")
+        used_slugs.add(slug)
+        try:
+            published = date.fromisoformat(str(entry.get("publication_date"))[:10]).isoformat()
+        except ValueError as error:
+            raise ValueError(f"{path.name}: publication_date must be a valid YYYY-MM-DD date") from error
+        entries.append({
+            **entry,
+            "publication_date": published,
+            "url": f"/journal/{slug}/",
+            "legacy_name": path.stem if not path.stem.startswith(".") else "",
+            "cover_src": image(entry.get("cover")),
+            "body_html": richtext(entry.get("body")),
+        })
+    return sorted(entries, key=lambda entry: (entry["publication_date"], entry["url"]), reverse=True)
+
+
 def build():
     if OUTPUT.exists():
         from shutil import rmtree
@@ -144,11 +174,8 @@ def build():
     )
     profile = read(CONTENT / "profile.json")
     socials = read(CONTENT / "social.json")
-    writing = sorted(
-        (item for item in records("writing") if item.get("status") == "published"),
-        key=lambda item: item.get("publication_date") or "",
-        reverse=True,
-    )
+    writing = journal_entries()
+    projects = sorted(records("projects"), key=order_key)
     photos = []
     for item in sorted(records("photos"), key=order_key):
         source = image(item.get("image"))
@@ -156,21 +183,26 @@ def build():
             photos.append({**item, "image": source})
     env.globals.update(
         site_url=SITE_URL, profile=profile, portrait=image(profile.get("photo")) or PORTRAIT_FALLBACK,
-        year=date.today().year,
+        year=date.today().year, socials=socials, projects=projects, photos=photos,
     )
 
     output_file("index.html", text=env.get_template("home.html").render(
-        socials=socials,
         timeline=timeline(),
-        projects=sorted(records("projects"), key=order_key),
         achievements=sorted(records("achievements"), key=lambda item: item.get("event_date") or "", reverse=True),
         publications=sorted(records("publications"), key=lambda item: item.get("year") or 0, reverse=True),
         writing=writing,
-        photos=photos,
     ))
+    output_file("journal/index.html", text=env.get_template("journal.html").render(entries=writing))
     article = env.get_template("article.html")
+    redirect = env.get_template("redirect.html")
     for item in writing:
-        output_file(f"writing/{item['slug']}/index.html", text=article.render(article=item))
+        output_file(f"{item['url'].lstrip('/')}index.html", text=article.render(article=item))
+        if item["legacy_name"]:
+            output_file(
+                f"writing/{item['legacy_name']}/index.html",
+                text=redirect.render(target=item["url"]),
+            )
+    output_file("writing/index.html", text=redirect.render(target="/journal/"))
 
     for relative in (
         "CNAME", "style.css", "interactions.js", "images/favicon.svg", "images/profile.svg",

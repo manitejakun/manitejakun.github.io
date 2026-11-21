@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "components.html" import dated %}
+{% set meta_title = 'Journal | ' ~ profile.name %}
+{% set meta_description = 'Essays, project notes, photography, and short thoughts by ' ~ profile.name ~ '.' %}
+{% set page_path = '/journal/' %}
+{% block body %}
+<div class="journal">
+  <header class="journal-header">
+    <h1>Journal<span aria-hidden="true">.</span></h1>
+    <p>Essays, project notes, photography, and short thoughts.</p>
+  </header>
+  {% if entries %}
+  <ol class="journal-list" role="list">
+    {% for entry in entries %}
+    <li>
+      <a class="journal-card{% if not entry.cover_src %} journal-card--text{% endif %}" href="{{ entry.url }}">
+        {% if entry.cover_src %}
+        <div class="journal-card-image">
+          <img src="{{ entry.cover_src }}" alt=""{% if not loop.first %} loading="lazy"{% endif %} decoding="async">
+        </div>
+        {% endif %}
+        <div class="journal-card-text">
+          <p class="journal-date">{{ dated(entry.publication_date) }}</p>
+          <h2>{{ entry.title }}</h2>
+          {% if entry.get('description') %}<p class="journal-description">{{ entry.description }}</p>{% endif %}
+        </div>
+        <span class="journal-card-arrow" aria-hidden="true">↗&#xfe0e;</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="journal-empty">The first entry is coming soon.</p>
+  {% endif %}
+</div>
+{% endblock %}
