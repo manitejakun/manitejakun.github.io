@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  {% set description = meta_description|default(profile.get('headline') or profile.get('tagline') or (profile.name ~ ' — Portfolio'), true) %}
+  {% set title = meta_title|default(profile.name, true) %}
+  {% set canonical = site_url ~ page_path|default('/') %}
+  <title>{{ title }}</title>
+  <meta name="description" content="{{ description }}">
+  <link rel="canonical" href="{{ canonical }}">
+  <meta property="og:type" content="{{ 'article' if is_article|default(false) else 'website' }}">
+  <meta property="og:site_name" content="{{ profile.name }}">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:url" content="{{ canonical }}">
+  {% set share_image = meta_image|default(portrait if profile.get('photo') and portrait != '/images/profile.svg' else '', true) %}
+  {% if share_image %}
+  <meta property="og:image" content="{{ site_url ~ share_image }}">
+  <meta property="og:image:alt" content="{{ meta_image_alt|default(profile.get('photo_alt') or profile.name, true) }}">
+  {% endif %}
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <main id="main" class="page" tabindex="-1">
+    {% block body %}{% endblock %}
+    <footer class="footer">© {{ year }} {{ profile.name }}</footer>
+  </main>
+</body>
+</html>

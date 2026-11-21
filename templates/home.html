@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% from "components.html" import social_link, text_link, badges, media_image, dated %}
+{% block body %}
+<header class="profile">
+  <img class="portrait" src="{{ portrait }}" width="144" height="144" alt="{{ (profile.get('photo_alt') or ('Portrait of ' ~ profile.name)) if portrait != '/images/profile.svg' else '' }}">
+  <div class="intro">
+    <h1>{{ profile.name }}</h1>
+    {% if profile.get('headline') %}<p class="headline">{{ profile.headline }}</p>{% endif %}
+    {% if profile.get('tagline') %}<p class="tagline">{{ profile.tagline }}</p>{% endif %}
+    {% if profile.get('location') %}<p class="location">{{ profile.location }}</p>{% endif %}
+    {% set resume = profile.get('resume')|pdf %}
+    {% set resume_url = profile.get('resume_url')|web_url %}
+    {% if profile.get('email') or resume or resume_url or socials.values()|select|list %}
+    <nav class="socials" aria-label="Contact and social links">
+      {{ social_link('Email', ('mailto:' ~ profile.email) if profile.get('email') else '', 'mail') }}
+      {{ social_link('GitHub', socials.get('github')|web_url, 'github') }}
+      {{ social_link('LinkedIn', socials.get('linkedin')|web_url, 'linkedin') }}
+      {{ social_link('X', socials.get('twitter')|web_url, 'x') }}
+      {{ social_link('Blog', socials.get('blog')|web_url, 'blog') }}
+      {% for link in socials.get('other') or [] %}{{ social_link(link.label, link.url|web_url, 'link') }}{% endfor %}
+      {% if resume %}
+      <a class="social-link" href="{{ resume }}" download><svg width="18" height="18" aria-hidden="true" focusable="false"><use href="/images/social.svg#download"></use></svg><span>Resume (PDF)</span></a>
+      {% else %}
+      {{ social_link('Resume', resume_url, 'download') }}
+      {% endif %}
+    </nav>
+    {% endif %}
+  </div>
+</header>
+{% if timeline %}
+<section aria-labelledby="timeline">
+  <h2 id="timeline">Education &amp; experience</h2>
+  <ol class="timeline">
+    {% for item in timeline %}
+    <li class="timeline-entry">
+      <p class="timeline-date">{% if item.start %}{{ item.start }} – {{ item.end or 'Present' }}{% endif %}</p>
+      <div class="timeline-detail">
+        {{ media_image(item.get('logo')|image, '', 'logo') }}
+        <div>
+          <h3>{{ item.title }}</h3>
+          <p class="metadata">{{ item.organization }}{% if item.detail %} · {{ item.detail }}{% endif %}</p>
+          {% if item.get('description') %}<div class="prose">{{ item.description|markdown }}</div>{% endif %}
+          {{ badges(item.get('technologies'), 'Technologies') }}
+          {% if item.get('links') %}
+          <div class="entry-links">{% for link in item.links %}{{ text_link(link.label, link.url|web_url) }}{% endfor %}</div>
+          {% endif %}
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+{% if profile.get('bio') %}
+<section aria-labelledby="about">
+  <h2 id="about">About</h2>
+  <div class="prose">{{ profile.bio|markdown }}</div>
+</section>
+{% endif %}
+{% if projects %}
+<section aria-labelledby="projects">
+  <h2 id="projects">Projects</h2>
+  <ul class="entries">
+    {% for item in projects %}
+    {% set cover = item.get('cover')|image %}
+    <li class="entry{% if cover %} entry-with-image{% endif %}">
+      {{ media_image(cover, item.get('cover_alt') or ('Screenshot of ' ~ item.title), 'entry-image') }}
+      <div>
+        <h3>{{ item.title }}{% if item.get('featured') %} <span class="feature">Featured</span>{% endif %}</h3>
+        {% if item.get('project_date') %}<p class="metadata">{{ dated(item.project_date) }}</p>{% endif %}
+        {% if item.get('description') %}<div class="prose">{{ item.description|markdown }}</div>{% endif %}
+        {{ badges(item.get('technologies'), 'Technologies') }}
+        {% set github_url = item.get('github_url')|web_url %}
+        {% set demo_url = item.get('demo_url')|web_url %}
+        {% if github_url or demo_url %}<div class="entry-links">{{ text_link('Source code', github_url) }}{{ text_link('Live demo', demo_url) }}</div>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% if achievements %}
+<section aria-labelledby="achievements">
+  <h2 id="achievements">Achievements &amp; hackathons</h2>
+  <ul class="entries">
+    {% for item in achievements %}
+    {% set cover = item.get('image')|image %}
+    <li class="entry{% if cover %} entry-with-image{% endif %}">
+      {% if cover %}
+      <a href="{{ cover }}" aria-label="Open image for {{ item.title }}">{{ media_image(cover, item.get('image_alt') or ('Award image for ' ~ item.title), 'entry-image award-image') }}</a>
+      {% endif %}
+      <div>
+        <h3>{{ item.title }}</h3>
+        <p class="metadata">{{ item.event }}{% if item.get('organization') %} · {{ item.organization }}{% endif %}{% if item.get('event_date') %} · {{ dated(item.event_date) }}{% endif %}</p>
+        {% if item.get('description') %}<div class="prose">{{ item.description|markdown }}</div>{% endif %}
+        {% set external = item.get('external_url')|web_url %}
+        {% if external %}<div class="entry-links">{{ text_link('Event or award details', external) }}</div>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% if publications %}
+<section aria-labelledby="publications">
+  <h2 id="publications">Publications</h2>
+  <ul class="entries">
+    {% for item in publications %}
+    {% set external = item.get('publication_url')|web_url %}
+    {% set pdf = item.get('pdf')|pdf %}
+    {% set pdf_url = item.get('pdf_url')|web_url %}
+    <li class="entry">
+      <h3>{% if external %}{{ text_link(item.title, external) }}{% else %}{{ item.title }}{% endif %}</h3>
+      {% if item.get('authors') %}<p class="authors">{{ item.authors|join(', ') }}</p>{% endif %}
+      <p class="metadata">{% if item.get('venue') %}{{ item.venue }} · {% endif %}{{ item.year }}</p>
+      {% if item.get('description') %}<div class="prose">{{ item.description|markdown }}</div>{% endif %}
+      {% if pdf or pdf_url %}<div class="entry-links">{{ text_link('Publication PDF', pdf or pdf_url) }}</div>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% if writing %}
+<section aria-labelledby="writing">
+  <h2 id="writing">Writing</h2>
+  <ul class="entries">
+    {% for item in writing %}
+    <li class="entry">
+      <h3><a href="/writing/{{ item.slug|urlencode }}/">{{ item.title }}</a></h3>
+      <p class="metadata">{{ dated(item.publication_date) }}</p>
+      {{ badges(item.get('tags'), 'Tags') }}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

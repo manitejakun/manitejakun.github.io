@@ -1,0 +1,28 @@
+{% macro social_link(label, href, icon) -%}
+  {% if href %}
+  <a class="social-link" href="{{ href }}">
+    <svg width="18" height="18" aria-hidden="true" focusable="false"><use href="/images/social.svg#{{ icon }}"></use></svg>
+    <span>{{ label }}</span>
+  </a>
+  {% endif %}
+{%- endmacro %}
+
+{% macro text_link(label, href, download=false) -%}
+  {% if href %}<a href="{{ href }}"{% if download %} download{% endif %}>{{ label }}</a>{% endif %}
+{%- endmacro %}
+
+{% macro badges(items, label) -%}
+  {% if items %}
+  <ul class="badges" aria-label="{{ label }}">
+    {% for item in items if item %}<li>{{ item }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+{%- endmacro %}
+
+{% macro media_image(src, alt, class_name) -%}
+  {% if src %}<img class="{{ class_name }}" src="{{ src }}" alt="{{ alt }}" loading="lazy" decoding="async">{% endif %}
+{%- endmacro %}
+
+{% macro dated(value) -%}
+  {% if value|date_label %}<time datetime="{{ (value|string)[:10] }}">{{ value|date_label }}</time>{% endif %}
+{%- endmacro %}
