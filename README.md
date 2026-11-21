@@ -63,6 +63,3 @@ In this public repository, **Draft** keeps an entry out of the generated website
 The static build replaces branch-based publishing. The migration removes the old `.nojekyll` marker because GitHub Actions publishes the generated HTML directly. To preview locally as a maintainer, install `requirements.txt`, run `python build.py`, and serve `_site` with `python -m http.server 8000 --directory _site`. Routine CMS updates require no local build.
 
 The layout preserves the original portfolio’s academic conventions. The original repository README credits [Harshvardhan Uppaluru’s portfolio](https://uhvardhan.github.io/) and [the academic template](https://github.com/leonidk/leonidk.github.io).
-
-## Private Journal studio
-The review version uses GitHub owner sign-in and server-side publishing. Follow [Studio setup and writing guide](private_studio/README.md) before deploying it.

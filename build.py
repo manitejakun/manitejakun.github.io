@@ -176,6 +176,8 @@ def build():
     socials = read(CONTENT / "social.json")
     writing = journal_entries()
     projects = sorted(records("projects"), key=order_key)
+    for project in projects:
+        project["url"] = "/projects/" + project["slug"] + "/"
     photos = []
     for item in sorted(records("photos"), key=order_key):
         source = image(item.get("image"))
@@ -207,7 +209,10 @@ def build():
         writing=writing,
     ))
     output_file("journal/index.html", text=env.get_template("journal.html").render(entries=writing))
-    urls = ["/", "/journal/"] + [entry["url"] for entry in writing]
+    for project in projects:
+        output_file(project["url"].strip("/") + "/index.html", text=env.get_template("project.html").render(project=project))
+    output_file("studio/index.html", text=env.get_template("redirect.html").render(target="/journal/"))
+    urls = ["/", "/journal/"] + [entry["url"] for entry in writing + projects]
     output_file("sitemap.xml", text='<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + "".join(f"<url><loc>{SITE_URL}{url}</loc></url>" for url in urls) + "</urlset>")
     output_file("robots.txt", text=f"User-agent: *\nDisallow: /studio/\nSitemap: {SITE_URL}/sitemap.xml\n")
     output_file("404.html", text=env.get_template("404.html").render())
@@ -223,7 +228,6 @@ def build():
     output_file("writing/index.html", text=redirect.render(target="/journal/"))
 
     for relative in (
-        "studio/index.html", "studio/studio.css",
         "CNAME", "style.css", "interactions.js", "images/favicon.svg", "images/profile.svg",
         "images/social.svg", "images/sculpture.webp", "fonts/inter-latin.woff2",
         "fonts/caveat-latin.woff2", "fonts/OFL-Inter.txt", "fonts/OFL-Caveat.txt",

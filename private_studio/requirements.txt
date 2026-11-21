@@ -1,4 +1,0 @@
--r ../requirements.txt
-Flask>=3.1,<4
-gunicorn>=23,<27
-Pillow>=12,<14

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% from "components.html" import badges, text_link, dated %}
+{% set page_path = project.url %}
+{% set meta_title = project.title ~ ' | Projects · ' ~ profile.name %}
+{% set meta_description = project.get('description') or project.title %}
+{% set meta_image = project.get('cover')|image %}
+{% block body %}
+<article class="journal article-page journal-article"><a href="/#projects">← Projects</a><header class="journal-article-header"><p class="journal-date">{{ dated(project.get('project_date')) }}</p><h1>{{ project.title }}</h1></header>
+{% if meta_image %}<figure class="journal-cover"><img src="{{ meta_image }}" alt="{{ project.get('cover_alt') or project.title }}"></figure>{% endif %}
+<div class="journal-body prose">{{ project.get('description')|markdown }}</div>{{ badges(project.get('technologies'),'Technologies') }}
+<div class="entry-links">{{ text_link('Source code',project.get('github_url')|web_url) }}{{ text_link('Live demo',project.get('demo_url')|web_url) }}</div></article>
+{% endblock %}
