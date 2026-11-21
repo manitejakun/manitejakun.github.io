@@ -1,20 +1,31 @@
 {% extends "base.html" %}
-{% from "components.html" import badges, media_image, dated %}
-{% set meta_title = article.title ~ ' | ' ~ profile.name %}
-{% set meta_description = (article.body|markdown|striptags|wordwrap(158)).splitlines()|first|default(article.title, true) %}
-{% set page_path = '/writing/' ~ (article.slug|urlencode) ~ '/' %}
-{% set meta_image = article.get('cover')|image %}
-{% set meta_image_alt = article.get('cover_alt') or ('Cover image for ' ~ article.title) if meta_image else '' %}
+{% from "components.html" import badges, dated %}
+{% set meta_title = article.title ~ ' | Journal · ' ~ profile.name %}
+{% set meta_description = article.get('description') or article.get('subtitle') or (article.body_html|striptags|wordwrap(158)).splitlines()|first|default(article.title, true) %}
+{% set page_path = article.url %}
+{% set meta_image = article.cover_src %}
+{% set meta_image_alt = article.get('cover_alt') or '' %}
 {% set is_article = true %}
+{% set article_date = article.publication_date %}
 {% block body %}
-<nav class="back" aria-label="Portfolio navigation"><a href="/#writing">← Back to writing</a></nav>
-<article class="article">
-  <header>
-    <h1>{{ article.title }}</h1>
-    <p class="metadata">{{ dated(article.publication_date) }}</p>
-    {{ badges(article.get('tags'), 'Tags') }}
-  </header>
-  {{ media_image(meta_image, meta_image_alt, 'article-cover') }}
-  <div class="prose article-prose">{{ article.body|markdown }}</div>
-</article>
+<div class="journal article-page">
+  <p class="journal-back"><a class="glass" href="/journal/">← Back to Journal</a></p>
+  <article class="article journal-article">
+    <header class="journal-article-header">
+      <p class="journal-date">{{ dated(article.publication_date) }}</p>
+      <h1>{{ article.title }}</h1>
+      {% if article.get('subtitle') %}<p class="journal-deck">{{ article.subtitle }}</p>{% endif %}
+    </header>
+    {% if article.cover_src %}
+    <figure class="journal-cover">
+      <img src="{{ article.cover_src }}" alt="{{ article.get('cover_alt') or '' }}" decoding="async" fetchpriority="high">
+      {% if article.get('cover_caption') %}<figcaption>{{ article.cover_caption }}</figcaption>{% endif %}
+    </figure>
+    {% endif %}
+    <div class="prose article-prose journal-body">{{ article.body_html }}</div>
+    {% if article.get('tags') %}
+    <footer class="article-tags">{{ badges(article.tags, 'Tags') }}</footer>
+    {% endif %}
+  </article>
+</div>
 {% endblock %}

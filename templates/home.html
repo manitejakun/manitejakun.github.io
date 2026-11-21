@@ -1,20 +1,5 @@
 {% extends "base.html" %}
 {% from "components.html" import social_link, text_link, badges, media_image, dated %}
-{% block navigation %}
-<header class="site-header">
-  <nav class="site-nav glass" aria-label="Portfolio">
-    <a class="wordmark" href="#main" aria-label="{{ profile.name }} home">{{ profile.name }}<span aria-hidden="true">.</span></a>
-    <div class="nav-links">
-      {% if profile.get('bio') %}<a href="#about">About</a>{% endif %}
-      {% if projects %}<a href="#projects">Work</a>{% endif %}
-      {% if photos %}<a href="#photos">Photos</a>{% endif %}
-      {% if writing %}<a href="#writing">Writing</a>{% endif %}
-      {% set github = socials.get('github')|web_url %}
-      {% if github %}<a class="nav-external" href="{{ github }}">GitHub <span aria-hidden="true">↗&#xfe0e;</span></a>{% endif %}
-    </div>
-  </nav>
-</header>
-{% endblock %}
 {% block body %}
 <header class="profile">
   <div class="intro">
@@ -176,11 +161,11 @@
 {% endif %}
 {% if writing %}
 <section aria-labelledby="writing">
-  <h2 id="writing">Writing</h2>
+  <h2 id="writing"><a href="/journal/">Journal</a></h2>
   <ul class="entries">
-    {% for item in writing %}
+    {% for item in writing[:3] %}
     <li class="entry">
-      <h3><a href="/writing/{{ item.slug|urlencode }}/">{{ item.title }}</a></h3>
+      <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
       <p class="metadata">{{ dated(item.publication_date) }}</p>
       {{ badges(item.get('tags'), 'Tags') }}
     </li>

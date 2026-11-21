@@ -1,0 +1,14 @@
+<header class="site-header">
+  <nav class="site-nav glass" aria-label="Portfolio">
+    {% set on_journal = page_path is defined and page_path.startswith('/journal/') %}
+    <a class="wordmark" href="/" aria-label="{{ profile.name }} home">{{ profile.name }}<span aria-hidden="true">.</span></a>
+    <div class="nav-links">
+      {% if profile.get('bio') %}<a href="/#about">About</a>{% endif %}
+      {% if projects %}<a href="/#projects">Work</a>{% endif %}
+      {% if photos %}<a href="/#photos">Photos</a>{% endif %}
+      <a href="/journal/"{% if on_journal %} aria-current="{{ 'page' if page_path == '/journal/' else 'true' }}"{% endif %}>Journal</a>
+      {% set github = socials.get('github')|web_url %}
+      {% if github %}<a class="nav-external" href="{{ github }}">GitHub <span aria-hidden="true">↗&#xfe0e;</span></a>{% endif %}
+    </div>
+  </nav>
+</header>
