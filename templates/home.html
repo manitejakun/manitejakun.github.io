@@ -1,19 +1,36 @@
 {% extends "base.html" %}
 {% from "components.html" import social_link, text_link, badges, media_image, dated %}
+{% block navigation %}
+<header class="site-header">
+  <nav class="site-nav glass" aria-label="Portfolio">
+    <a class="wordmark" href="#main" aria-label="{{ profile.name }} home">{{ profile.name }}<span aria-hidden="true">.</span></a>
+    <div class="nav-links">
+      {% if profile.get('bio') %}<a href="#about">About</a>{% endif %}
+      {% if projects %}<a href="#projects">Work</a>{% endif %}
+      {% if photos %}<a href="#photos">Photos</a>{% endif %}
+      {% if writing %}<a href="#writing">Writing</a>{% endif %}
+      {% set github = socials.get('github')|web_url %}
+      {% if github %}<a class="nav-external" href="{{ github }}">GitHub <span aria-hidden="true">↗&#xfe0e;</span></a>{% endif %}
+    </div>
+  </nav>
+</header>
+{% endblock %}
 {% block body %}
 <header class="profile">
-  <img class="portrait" src="{{ portrait }}" width="144" height="144" alt="{{ (profile.get('photo_alt') or ('Portrait of ' ~ profile.name)) if portrait != '/images/profile.svg' else '' }}">
   <div class="intro">
-    <h1>{{ profile.name }}</h1>
-    {% if profile.get('headline') %}<p class="headline">{{ profile.headline }}</p>{% endif %}
+    {% set names = profile.name.split(' ', 1) %}
+    <h1>
+      <span>{{ names[0] }}</span>
+      {% if names|length > 1 %}<span>{{ names[1] }}<span class="hero-period" aria-hidden="true">.</span></span>
+      {% else %}<span class="hero-period" aria-hidden="true">.</span>{% endif %}
+    </h1>
     {% if profile.get('tagline') %}<p class="tagline">{{ profile.tagline }}</p>{% endif %}
     {% if profile.get('location') %}<p class="location">{{ profile.location }}</p>{% endif %}
     {% set resume = profile.get('resume')|pdf %}
     {% set resume_url = profile.get('resume_url')|web_url %}
-    {% if profile.get('email') or resume or resume_url or socials.values()|select|list %}
+    {% if profile.get('email') or resume or resume_url or socials.get('linkedin') or socials.get('twitter') or socials.get('blog') or socials.get('other') %}
     <nav class="socials" aria-label="Contact and social links">
       {{ social_link('Email', ('mailto:' ~ profile.email) if profile.get('email') else '', 'mail') }}
-      {{ social_link('GitHub', socials.get('github')|web_url, 'github') }}
       {{ social_link('LinkedIn', socials.get('linkedin')|web_url, 'linkedin') }}
       {{ social_link('X', socials.get('twitter')|web_url, 'x') }}
       {{ social_link('Blog', socials.get('blog')|web_url, 'blog') }}
@@ -24,6 +41,18 @@
       {{ social_link('Resume', resume_url, 'download') }}
       {% endif %}
     </nav>
+    {% endif %}
+    {% if profile.get('headline') %}<p class="signature">{{ profile.headline }}</p>{% endif %}
+  </div>
+  <div class="hero-stage">
+    <div class="hero-object" data-tilt>
+      <img class="hero-art" src="/images/sculpture.webp" width="830" height="900" fetchpriority="high" alt="">
+      <span class="glass-lens" aria-hidden="true"></span>
+    </div>
+    {% if portrait != '/images/profile.svg' %}
+    <figure class="portrait-print">
+      <img class="portrait" src="{{ portrait }}" width="144" height="144" alt="{{ profile.get('photo_alt') or ('Portrait of ' ~ profile.name) }}">
+    </figure>
     {% endif %}
   </div>
 </header>
@@ -55,6 +84,31 @@
 <section aria-labelledby="about">
   <h2 id="about">About</h2>
   <div class="prose">{{ profile.bio|markdown }}</div>
+</section>
+{% endif %}
+{% if photos %}
+<section class="photos" aria-labelledby="photos">
+  <h2 id="photos">Photos<span class="heading-point" aria-hidden="true">.</span></h2>
+  <ul class="film-grid">
+    {% for photo in photos %}
+    <li class="film-frame">
+      <a class="film-photo" href="{{ photo.image }}" data-lightbox>
+        <img src="{{ photo.image }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
+        <span class="film-open glass" aria-hidden="true">↗&#xfe0e;</span>
+      </a>
+      {% if photo.get('caption') or photo.get('photo_date') %}
+      <div class="film-note">
+        {% if photo.get('caption') %}<p>{{ photo.caption }}</p>{% endif %}
+        {{ dated(photo.get('photo_date')) }}
+      </div>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  <dialog class="photo-dialog" aria-label="Photo viewer">
+    <button class="glass photo-close" type="button" aria-label="Close photo" autofocus>×</button>
+    <img alt="">
+  </dialog>
 </section>
 {% endif %}
 {% if projects %}
@@ -135,3 +189,5 @@
 </section>
 {% endif %}
 {% endblock %}
+
+{% block scripts %}<script src="/interactions.js" defer></script>{% endblock %}

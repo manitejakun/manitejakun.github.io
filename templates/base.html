@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#f6f0e6">
   {% set description = meta_description|default(profile.get('headline') or profile.get('tagline') or (profile.name ~ ' — Portfolio'), true) %}
   {% set title = meta_title|default(profile.name, true) %}
   {% set canonical = site_url ~ page_path|default('/') %}
@@ -22,13 +22,16 @@
   {% endif %}
   <meta name="twitter:card" content="summary">
   <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  {% block navigation %}{% endblock %}
   <main id="main" class="page" tabindex="-1">
     {% block body %}{% endblock %}
     <footer class="footer">© {{ year }} {{ profile.name }}</footer>
   </main>
+  {% block scripts %}{% endblock %}
 </body>
 </html>
