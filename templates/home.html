@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "components.html" import social_link, text_link, badges, media_image, dated %}
 {% block body %}
-<header class="profile">
+<header class="profile" id="profile">
   <img class="portrait" src="{{ portrait }}" width="144" height="144" alt="{{ (profile.get('photo_alt') or ('Portrait of ' ~ profile.name)) if portrait != '/images/profile.svg' else '' }}">
   <div class="intro">
     <h1>{{ profile.name }}</h1>
@@ -27,6 +27,16 @@
     {% endif %}
   </div>
 </header>
+{% if profile.get('bio') or timeline or projects or achievements or publications or writing %}
+<nav class="section-nav" aria-label="Portfolio sections">
+  {% if profile.get('bio') %}<a href="#about">About</a>{% endif %}
+  {% if timeline %}<a href="#timeline">Education &amp; experience</a>{% endif %}
+  {% if projects %}<a href="#projects">Projects</a>{% endif %}
+  {% if achievements %}<a href="#achievements">Achievements</a>{% endif %}
+  {% if publications %}<a href="#publications">Publications</a>{% endif %}
+  {% if writing %}<a href="#writing">Writing</a>{% endif %}
+</nav>
+{% endif %}
 {% if timeline %}
 <section aria-labelledby="timeline">
   <h2 id="timeline">Education &amp; experience</h2>
