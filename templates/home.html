@@ -3,12 +3,8 @@
 {% block body %}
 <header class="profile">
   <div class="intro">
-    {% set names = profile.name.split(' ', 1) %}
-    <h1>
-      <span>{{ names[0] }}</span>
-      {% if names|length > 1 %}<span>{{ names[1] }}<span class="hero-period" aria-hidden="true">.</span></span>
-      {% else %}<span class="hero-period" aria-hidden="true">.</span>{% endif %}
-    </h1>
+    <h1>{{ profile.name|replace(' ', '') }}<span class="hero-period">.</span></h1>
+    <a class="hero-link" href="/journal/">Read the Journal ↗</a>
     {% if profile.get('tagline') %}<p class="tagline">{{ profile.tagline }}</p>{% endif %}
     {% if profile.get('location') %}<p class="location">{{ profile.location }}</p>{% endif %}
     {% set resume = profile.get('resume')|pdf %}
@@ -34,6 +30,7 @@
       <img class="hero-art" src="/images/sculpture.webp" width="830" height="900" fetchpriority="high" alt="">
       <span class="glass-lens" aria-hidden="true"></span>
     </div>
+    {% if photos %}<a class="scene-print" href="#photos"><img src="{{ photos[0].image }}" srcset="{{ photos[0].srcset }}" sizes="190px" width="{{ photos[0].dimensions[0] }}" height="{{ photos[0].dimensions[1] }}" alt="{{ photos[0].alt }}"><span>{{ photos[0].title }}</span></a>{% endif %}
     {% if portrait != '/images/profile.svg' %}
     <figure class="portrait-print">
       <img class="portrait" src="{{ portrait }}" width="144" height="144" alt="{{ profile.get('photo_alt') or ('Portrait of ' ~ profile.name) }}">
@@ -41,6 +38,13 @@
     {% endif %}
   </div>
 </header>
+{% if writing or photos or projects %}
+<section class="selection"><h2>Selected work</h2><div class="mosaic">
+{% if photos %}<a class="work-print" href="#photos"><img src="{{ photos[0].image }}" srcset="{{ photos[0].srcset }}" sizes="(max-width:650px) 88vw, 520px" width="{{ photos[0].dimensions[0] }}" height="{{ photos[0].dimensions[1] }}" alt="{{ photos[0].alt }}" decoding="async"><strong>{{ photos[0].title }}</strong></a>{% endif %}
+{% if writing %}<a class="work-note" href="{{ writing[0].url }}"><small>Journal · {{ dated(writing[0].publication_date) }}</small><strong>{{ writing[0].title }}</strong><span aria-hidden="true">↗</span></a>{% endif %}
+{% if projects %}<a class="work-project" href="#projects"><small>Projects</small><strong>{{ projects[0].title }}</strong></a>{% endif %}
+</div></section>{% endif %}
+
 {% if timeline %}
 <section aria-labelledby="timeline">
   <h2 id="timeline">Education &amp; experience</h2>
@@ -65,12 +69,6 @@
   </ol>
 </section>
 {% endif %}
-{% if profile.get('bio') %}
-<section aria-labelledby="about">
-  <h2 id="about">About</h2>
-  <div class="prose">{{ profile.bio|markdown }}</div>
-</section>
-{% endif %}
 {% if photos %}
 <section class="photos" aria-labelledby="photos">
   <h2 id="photos">Photos<span class="heading-point" aria-hidden="true">.</span></h2>
@@ -78,7 +76,7 @@
     {% for photo in photos %}
     <li class="film-frame">
       <a class="film-photo" href="{{ photo.image }}" data-lightbox>
-        <img src="{{ photo.image }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
+        <img src="{{ photo.image }}" srcset="{{ photo.srcset }}" sizes="(max-width:650px) 88vw, 520px" width="{{ photo.dimensions[0] }}" height="{{ photo.dimensions[1] }}" alt="{{ photo.alt }}" loading="lazy" decoding="async">
         <span class="film-open glass" aria-hidden="true">↗&#xfe0e;</span>
       </a>
       {% if photo.get('caption') or photo.get('photo_date') %}
@@ -171,6 +169,13 @@
     </li>
     {% endfor %}
   </ul>
+</section>
+{% endif %}
+{% if profile.get('bio') %}
+<section aria-labelledby="about">
+  <h2 id="about">About</h2>
+  <div class="prose">{{ profile.bio|markdown }}</div>
+{% if profile.get('email') %}<a class="hero-link" href="mailto:{{ profile.email }}">Email me ↗</a>{% endif %}
 </section>
 {% endif %}
 {% endblock %}
