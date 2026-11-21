@@ -205,6 +205,7 @@ def build():
     output_file("writing/index.html", text=redirect.render(target="/journal/"))
 
     for relative in (
+        "studio/index.html", "studio/studio.js", "studio/studio.css",
         "CNAME", "style.css", "interactions.js", "images/favicon.svg", "images/profile.svg",
         "images/social.svg", "images/sculpture.webp", "fonts/inter-latin.woff2",
         "fonts/caveat-latin.woff2", "fonts/OFL-Inter.txt", "fonts/OFL-Caveat.txt",
