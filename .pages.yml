@@ -539,3 +539,55 @@ content:
     label: Tags
     type: string
     list: true
+- name: photos
+  label: Photos
+  type: collection
+  path: content/photos
+  format: json
+  filename:
+    template: '{primary}.json'
+    field: false
+  subfolders: false
+  exclude:
+  - .gitkeep
+  view:
+    primary: title
+    fields:
+    - title
+    - order
+    sort: [order]
+    default:
+      sort: order
+      order: asc
+  fields:
+  - name: title
+    label: Photo name
+    type: string
+    required: true
+    description: Used in the editor and to create the entry filename.
+  - name: image
+    label: Photo
+    type: image
+    required: true
+    options:
+      media: images
+  - name: alt
+    label: Alternative text
+    type: string
+    required: true
+    description: Describe the image briefly for visitors who use a screen reader.
+  - name: caption
+    label: Handwritten caption
+    type: string
+  - name: photo_date
+    label: Photo date
+    type: date
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: order
+    label: Display order
+    type: number
+    default: 100
+    options:
+      min: 0

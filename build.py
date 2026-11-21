@@ -149,6 +149,11 @@ def build():
         key=lambda item: item.get("publication_date") or "",
         reverse=True,
     )
+    photos = []
+    for item in sorted(records("photos"), key=order_key):
+        source = image(item.get("image"))
+        if source:
+            photos.append({**item, "image": source})
     env.globals.update(
         site_url=SITE_URL, profile=profile, portrait=image(profile.get("photo")) or PORTRAIT_FALLBACK,
         year=date.today().year,
@@ -161,12 +166,17 @@ def build():
         achievements=sorted(records("achievements"), key=lambda item: item.get("event_date") or "", reverse=True),
         publications=sorted(records("publications"), key=lambda item: item.get("year") or 0, reverse=True),
         writing=writing,
+        photos=photos,
     ))
     article = env.get_template("article.html")
     for item in writing:
         output_file(f"writing/{item['slug']}/index.html", text=article.render(article=item))
 
-    for relative in ("CNAME", "style.css", "images/favicon.svg", "images/profile.svg", "images/social.svg"):
+    for relative in (
+        "CNAME", "style.css", "interactions.js", "images/favicon.svg", "images/profile.svg",
+        "images/social.svg", "images/sculpture.webp", "fonts/inter-latin.woff2",
+        "fonts/caveat-latin.woff2", "fonts/OFL-Inter.txt", "fonts/OFL-Caveat.txt",
+    ):
         output_file(relative)
     for relative in sorted(media):
         output_file(relative)

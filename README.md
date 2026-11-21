@@ -14,6 +14,7 @@ After the first deployment, sign in to Pages CMS with GitHub, open `manitejakun/
 | Project | Use **Projects → New**, then add details, a screenshot, and links. Edit an existing entry to update it or use its Delete action to remove it. Featured projects get a discreet label. |
 | Award or hackathon | Use **Achievements and hackathons → New**. Add the event, award, date, and a certificate or award image. A visitor can open the image at full size. |
 | Publication | Use **Publications → New**. Add the title, authors, venue, year, and available paper links or PDF. |
+| Photos | Use **Photos → New** to select or upload an image. Add alternative text, a handwritten caption, and an optional date. Lower display-order values appear first. |
 | Article | Use **Writing → New**. Compose in the rich-text editor and add tags, a date, and an optional cover. Leave it on **Draft** while you work. Change to **Published** and save when it is ready. An existing article keeps the address set by its original filename when you edit its title. |
 
 Give earlier timeline entries and projects lower display-order values. For example, assign 10, 20, and 30 so another item can slot in between later. Entries with the same value use their filename as the tie-breaker. Achievements, publications, and articles show the newest first.
@@ -27,7 +28,7 @@ This repository is public. Draft articles and uploaded files are visible in GitH
 1. Preserve the pre-migration commit on a backup branch before merging the migration. Verify it still matches the previous `main`.
 2. In **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. Check the Custom domain field still contains `maniteja.me`. The repository also retains its `CNAME`.
 3. Merge the approved migration to `main`. In **Actions**, confirm that **Build and deploy portfolio** succeeds. If the Pages source was switched after merging, run the workflow manually on `main`.
-4. Sign in to Pages CMS and install or authorize its GitHub App for **only** this repository. Open `main` and confirm the eight content groups appear.
+4. Sign in to Pages CMS and install or authorize its GitHub App for **only** this repository. Open `main` and confirm the nine content groups appear.
 5. To test the complete workflow, change and save one genuine profile value in Pages CMS. Verify that Pages CMS created the commit, the Pages deployment succeeded, and the new value appears on `maniteja.me`. Check an uploaded image or PDF the same way. Check the domain over HTTPS and enable **Enforce HTTPS** when GitHub makes it available.
 
 [GitHub Pages publishing documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) · [Pages CMS setup documentation](https://pagescms.org/docs/quick-start/)
