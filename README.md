@@ -15,7 +15,7 @@ After the first deployment, sign in to Pages CMS with GitHub, open `manitejakun/
 | Award or hackathon | Use **Achievements and hackathons → New**. Add the event, award, date, and a certificate or award image. A visitor can open the image at full size. |
 | Publication | Use **Publications → New**. Add the title, authors, venue, year, and available paper links or PDF. |
 | Photos | Use **Photos → New** to select or upload an image. Add alternative text, a handwritten caption, and an optional date. Lower display-order values appear first. |
-| Journal entry | Use **Journal → New**. Compose in the rich-text editor and add tags, a date, and an optional cover. Leave it on **Draft** while you work. Change to **Published** and save when it is ready. An existing article keeps the address set by its original filename when you edit its title. |
+| Journal entry | Use **Journal → New**. Compose in the rich-text editor and add tags, a date, and an optional cover. Leave it on **Draft** while you work. Change to **Published** and save when it is ready. A title edit preserves the article address as long as the slug stays the same. |
 
 Give earlier timeline entries and projects lower display-order values. For example, assign 10, 20, and 30 so another item can slot in between later. Entries with the same value use their filename as the tie-breaker. Achievements, publications, and articles show the newest first.
 
